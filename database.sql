@@ -1,4 +1,4 @@
-create TABLE users(
+create TABLE [IF NOT EXISTS] users(
     user_id INTEGER PRIMARY KEY,
     chat_id INTEGER NOT NULL,
     start_date TIMESTAMP NOT NULL,
@@ -9,7 +9,7 @@ create TABLE users(
     FOREIGN KEY server REFERENCES servers
 );
 
-create TABLE servers(
+create TABLE [IF NOT EXISTS] servers(
     server VARCHAR (50) PRIMARY KEY,
     cnt_users INTEGER,
     max_users INTEGER
