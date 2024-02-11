@@ -35,11 +35,11 @@ class UserController {
     }
     async updateUser(req, res) {
         try{
-            const {user_id, chat_id, role, server, expiration_time, uuid } = req.body
+            const {user_id, role, server, expiration_time, uuid } = req.body
             console.log("update")
             const updateUser = await db.query(
-                `UPDATE users SET chat_id = $2, role = $3, server = $4, expiration_time = $5, uuid = $6 where user_id = $1 RETURNING *`,
-                [user_id, chat_id, role, server, expiration_time, uuid]
+                `UPDATE users SET role = $2, server = $3, expiration_time = $4, uuid = $5 where user_id = $1 RETURNING *`,
+                [user_id, role, server, expiration_time, uuid]
             )
 
             res.json(updateUser.rows[0])
