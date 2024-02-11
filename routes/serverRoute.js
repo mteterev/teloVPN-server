@@ -6,5 +6,6 @@ router.post('/server', serverController.addServer)
 router.get('/servers', serverController.getServers)
 router.put('/server', serverController.updateServer)
 router.delete('/server', serverController.deleteServers)
+router.get('/server/best', serverController.bestServer)
 
 module.exports = router
