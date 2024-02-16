@@ -2,6 +2,7 @@ version: "3.9"
 services:
   postgres:
     image: postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: "telovpn"
       POSTGRES_USER: "telovpn"
