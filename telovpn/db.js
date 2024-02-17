@@ -3,7 +3,7 @@ const pool = new Pool({
     user: "telovpn",
     password: 'password1235',
     database: 'telovpn',
-    host: "0.0.0.0",
+    host: "postgres",
     port: 5432
 });
 
