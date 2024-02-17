@@ -13,7 +13,7 @@ services:
     #   - MONGO_PORT=$MONGO_PORT
     #   - MONGO_DB=$MONGO_DB
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - ./telovpn:/home/node/app
       - ./telovpn/node_modules:/home/node/app/node_modules
