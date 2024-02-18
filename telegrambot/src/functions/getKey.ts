@@ -18,7 +18,6 @@ export const getKey = async ({ ctx, inbound, userServer }: any) => {
   const network = inboundsStreamSettings?.network;
   const sni = inboundsStreamSettings?.realitySettings?.serverNames?.[0];
   const serverUrl = userServer?.split('/')?.[2]?.split(':')?.[0];
-  console.log(serverUrl)
   if (
     userId &&
     userName &&

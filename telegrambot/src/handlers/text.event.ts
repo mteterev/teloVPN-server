@@ -16,6 +16,8 @@ import { clientMenu } from '../keyboards/lk.menu';
 import { paymentSuccessMenu } from '../keyboards/paymentSuccess.menu';
 import { getTimeToEnd } from '../functions/getTimeToEnd';
 import { getKey } from '../functions/getKey';
+import { adminBaseMain } from '../keyboards/adminBaseMain';
+import { adminIds } from '../constants/common';
 
 const composer = new Composer();
 
@@ -38,6 +40,14 @@ composer.command('start', async (ctx) => {
   } else {
     await ctx.reply(messages.helloMessage, {
       reply_markup: menuNewUserMain,
+    });
+  }
+});
+
+composer.command('admin', async (ctx) => {
+  if (adminIds.find((adminId) => Number(adminId) === ctx.from?.id)) {
+    await ctx.reply(messages.helloAdmin, {
+      reply_markup: adminBaseMain,
     });
   }
 });

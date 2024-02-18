@@ -20,6 +20,15 @@ export const createUser = async ({ user_id }: ICreateUser) => {
   }
 };
 
+export const removeUser = async ({ user_id }: ICreateUser) => {
+  try {
+    const user = await axiosServerInstance.delete(`/user/${user_id}`);
+    return user.data;
+  } catch (e: any) {
+    throw new Error(e);
+  }
+};
+
 export const updateUserAfterFirstPay = async ({
   user_id,
   expiration_time,

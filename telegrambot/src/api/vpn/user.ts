@@ -46,3 +46,16 @@ export const updateClient = async (user: any) => {
     console.log(e);
   }
 };
+
+export const deleteClient = async (user: any) => {
+  try {
+    const response = await axiosVPNInstance.post(
+      `${
+        ServerService.userServer(user.server)?.url
+      }/panel/api/inbounds/1/delClient/${user.uuid}`
+    );
+    return response;
+  } catch (e) {
+    console.log(e);
+  }
+};

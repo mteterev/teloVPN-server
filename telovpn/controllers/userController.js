@@ -73,12 +73,26 @@ class UserController {
     }
   }
   async deleteUser(req, res) {
+    const user_id = req.params.user_id;
+
+    const request = new Promise((resolve, reject) => {
+      db.query(
+        `DELETE FROM users WHERE user_id = $1`,
+        [user_id],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(results);
+        }
+      );
+    });
+
     try {
-      const user_id = req.params.user_id;
-      await db.query(`DELETE FROM users WHERE user_id = $1`, [user_id]);
-      res.json(`user ${user_id} deleted`);
+      const result = await request;
+      res.json(result.rows[0]);
     } catch (e) {
-      res.json(e);
+      res.status(400).send(e);
     }
   }
   async getUserServer(req, res) {

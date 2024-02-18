@@ -2,15 +2,26 @@ const db = require('../db');
 
 class UserController {
   async addServer(req, res) {
-    try {
-      const { server, url, max_users } = req.body;
-      const newServer = await db.query(
+    const { server, url, max_users } = req.body;
+
+    const request = new Promise((resolve, reject) => {
+      db.query(
         `INSERT INTO servers (server, url, cnt_users, max_users) VALUES ($1, $2, 0, $3) RETURNING *`,
-        [server, url, max_users]
+        [server, url, max_users],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(results);
+        }
       );
-      res.json(newServer.rows[0]);
+    });
+
+    try {
+      const result = await request;
+      res.json(result.rows[0]);
     } catch (e) {
-      res.json(e);
+      res.status(400).send(e);
     }
   }
   async getServers(req, res) {

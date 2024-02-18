@@ -1,8 +1,22 @@
 import { AuthServiceInstance } from './services/auth.services';
-import { Bot, GrammyError, HttpError } from 'grammy';
+import {
+  Bot,
+  Context,
+  GrammyError,
+  HttpError,
+  session,
+} from 'grammy';
 import { TG_API_KEY } from './constants/telegramBotApi';
 import handlers from './handlers';
 import { ServerService } from './services/server.services';
+import { MyContext } from './interfaces/common';
+import { createConversations } from './handlers/conversations';
+import { conversations } from '@grammyjs/conversations';
+
+function getSessionKey(ctx: Context): string | undefined {
+  const id =  ctx.update?.pre_checkout_query?.id || ctx.from?.id
+  return id?.toString();
+}
 
 const init = async () => {
   try {
@@ -20,7 +34,11 @@ const init = async () => {
       await Promise.all(cookiesInitPromises);
     }
 
-    const bot = new Bot(TG_API_KEY as string);
+    const bot = new Bot<MyContext>(TG_API_KEY as string);
+    //@ts-ignore
+    bot.use(session({ initial: () => ({}), getSessionKey }));
+    bot.use(conversations());
+    createConversations(bot);
     bot.use(handlers);
 
     bot.catch((err) => {

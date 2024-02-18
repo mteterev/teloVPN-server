@@ -5,7 +5,7 @@ import { instructionsMenu } from '../keyboards/instructions.menu';
 import { menuInformation } from '../keyboards/information.menu';
 import { menuNewUserMain } from '../keyboards/newUserMain.menu';
 import { editMessage } from '../helpers/editMessage';
-import { getUser, getUserServer } from '../api/user';
+import { getUser, getUserServer, getUsers, removeUser } from '../api/user';
 import { EUserRole } from '../enums/user.enum';
 import { clientMenu } from '../keyboards/lk.menu';
 import { getTimeToEnd } from '../functions/getTimeToEnd';
@@ -14,6 +14,8 @@ import { getInvoiceAmount } from '../functions/getInvoiceAmount';
 import { toHomeMenu } from '../keyboards/toHome.menu';
 import { getKey } from '../functions/getKey';
 import { getInbound } from '../api/vpn/getInbound';
+import { deleteClient } from '../api/vpn/user';
+import { getServers } from '../api/server';
 
 const composer = new Composer();
 
@@ -43,7 +45,7 @@ composer.callbackQuery('instructionCb', async (ctx) => {
 composer.callbackQuery('getVPNKeyAgainCb', async (ctx) => {
   const user = await getUser(ctx.from.id);
   const userServer = await getUserServer(ctx.from.id);
-  
+
   const inbound: any = await getInbound(user);
   const key = await getKey({ ctx, inbound, userServer: userServer.url });
   await editMessage({
@@ -113,6 +115,65 @@ composer.callbackQuery(/instruction/g, async (ctx) => {
   }
 
   await ctx.answerCallbackQuery();
+});
+
+composer.callbackQuery('createServer', async (ctx) => {
+  //@ts-ignore
+  await ctx.conversation.enter('createServer');
+  await ctx.answerCallbackQuery();
+});
+
+composer.callbackQuery('removeUserFromServer', async (ctx) => {
+  //@ts-ignore
+  await ctx.conversation.enter('removeUserFromServer');
+  await ctx.answerCallbackQuery();
+});
+
+composer.callbackQuery('removeMyselfFromServer', async (ctx) => {
+  const user = await getUser(ctx.from.id);
+  try {
+    await removeUser({ user_id: ctx.from.id });
+    await ctx.reply('Я успешно удален с сервера');
+
+    if (user.server) {
+      deleteClient(user)
+        .then(async () => {
+          await ctx.reply('Я успешно удален с VPN сервера');
+        })
+        .catch(async (e) => {
+          await ctx.reply('Не смогли удалить с VPN сервера :(');
+          await ctx.reply(e);
+        });
+    }
+  } catch (e) {
+    await ctx.reply('Ошибка удаления меня с сервера');
+  } finally {
+    await ctx.answerCallbackQuery();
+  }
+});
+
+composer.callbackQuery('getServers', async (ctx) => {
+  try {
+    const servers = await getServers();
+    await ctx.reply('Список серверов:');
+    await ctx.reply(JSON.stringify(servers.data));
+  } catch (e) {
+    await ctx.reply('Не получилось получить список серверов :(');
+  } finally {
+    await ctx.answerCallbackQuery();
+  }
+});
+
+composer.callbackQuery('getUsers', async (ctx) => {
+  try {
+    const users = await getUsers();
+    await ctx.reply('Список пользователей:');
+    await ctx.reply(JSON.stringify(users));
+  } catch (e) {
+    await ctx.reply('Не получилось получить список пользователей :(');
+  } finally {
+    await ctx.answerCallbackQuery();
+  }
 });
 
 export default composer;
