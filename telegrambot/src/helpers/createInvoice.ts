@@ -31,11 +31,11 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
     payload,
     process.env.API_KEY_PROVIDER_BOT ?? '',
     'RUB',
-    [{ label: 'TeloVPN', amount: 10000 }],
+    [{ label: 'TeloVPN', amount }],
     {
       need_email: true,
       send_email_to_provider: true,
-      provider_data: "{\"receipt\":{\"items\":[{\"description\":\"VPN\",\"quantity\":\"1\",\"amount\":{\"value\":\"100.00\",\"currency\":\"RUB\"},\"vat_code\":1}]}}",
+      provider_data: `{\"receipt\":{\"items\":[{\"description\":\"VPN: ${payload.split('month')[0]} месяц(ев)\",\"quantity\":\"1\",\"amount\":{\"value\":\"${amount / 100}.00\",\"currency\":\"RUB\"},\"vat_code\":1}]}}`,
     }
   );
 };
