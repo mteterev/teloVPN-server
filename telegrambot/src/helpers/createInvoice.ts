@@ -14,14 +14,12 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
       items: [
         { 
           description: `VPN ${payload.split('month')[0]} месяц(ев)`,
-          quantity: 1.00,
+          quantity: 1,
           amount: {
-            value: `${(amount / 100).toString()}.00`,
+            value: amount / 100,
             currency: 'RUB',
           },
           vat_code: 1,
-          payment_mode: 'full_payment',
-          payment_subject: 'service',
         },
       ],
     },
@@ -38,7 +36,7 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
       need_email: true,
       send_email_to_provider: true,
       //@ts-ignore
-      provider_data: JSON.stringify(providerData),
+      provider_data: "{\"receipt\":{\"email\":\"pod-zakaz1@yandex.ru\",\"items\":[{\"description\":\"VPN  месяц(ев)\",\"quantity\":\"1\",\"amount\":{\"value\":\"200\",\"currency\":\"RUB\"},\"vat_code\":\"1\"}]}}",
     }
   );
 };
