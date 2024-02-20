@@ -36,7 +36,7 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
       need_email: true,
       send_email_to_provider: true,
       //@ts-ignore
-      provider_data: "{\"receipt\":{\"items\":[{\"description\":\"VPN  месяц(ев)\",\"quantity\":\"1.00\",\"amount\":{\"value\":\"200.00\",\"currency\":\"rub\"},\"vat_code\":1}]}}",
+      provider_data: "{\"receipt\":{\"items\":[{\"description\":\"VPN  месяц(ев)\",\"quantity\":\"1.00\",\"amount\":{\"value\":\"200.00\",\"currency\":\"RUB\"},\"vat_code\":1}]}}",
     }
   );
 };
