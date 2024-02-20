@@ -10,12 +10,13 @@ interface ICreateInvoice {
 export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
   const providerData = {
     receipt: {
+      email: "pod-zakaz1@yandex.ru",
       items: [
         { 
           description: `VPN ${payload.split('month')[0]} месяц(ев)`,
-          quantity: 1.0,
+          quantity: 1.00,
           amount: {
-            value: amount / 100,
+            value: `${(amount / 100).toString()}.00`,
             currency: 'RUB',
           },
           vat_code: 1,
@@ -37,7 +38,7 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
       need_email: true,
       send_email_to_provider: true,
       //@ts-ignore
-      provider_data: providerData,
+      provider_data: JSON.stringify(providerData),
     }
   );
 };
