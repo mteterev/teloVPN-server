@@ -14,9 +14,9 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
       items: [
         { 
           description: `VPN ${payload.split('month')[0]} месяц(ев)`,
-          quantity: 1,
+          quantity: '1',
           amount: {
-            value: amount / 100,
+            value: '200',
             currency: 'RUB',
           },
           vat_code: 1,
@@ -30,12 +30,12 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
     `${payload.split('month')[0]} месяц(ев); 200 гб/мес`,
     payload,
     process.env.API_KEY_PROVIDER_BOT ?? '',
-    'rub',
+    'RUB',
     [{ label: 'TeloVPN', amount }],
     {
       need_email: true,
       send_email_to_provider: true,
-      provider_data: "{\"receipt\":{\"items\":[{\"description\":\"VPN  месяц\",\"quantity\":\"1\",\"amount\":{\"value\":\"200.00\",\"currency\":\"RUB\"},\"vat_code\":1}]}}",
+      provider_data: JSON.stringify(providerData),
     }
   );
 };

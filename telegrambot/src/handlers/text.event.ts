@@ -53,6 +53,7 @@ composer.command('admin', async (ctx) => {
 });
 
 composer.on('pre_checkout_query', (ctx) => {
+  console.log(ctx, ctx.update.pre_checkout_query.order_info)
   ctx.api.answerPreCheckoutQuery(ctx.preCheckoutQuery.id, true);
 });
 
