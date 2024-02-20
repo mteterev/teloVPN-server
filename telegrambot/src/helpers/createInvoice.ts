@@ -32,10 +32,10 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
     process.env.API_KEY_PROVIDER_BOT ?? '',
     'RUB',
     [{ label: 'TeloVPN', amount }],
-    {
-      need_email: true,
-      send_email_to_provider: true,
-      provider_data: JSON.stringify(providerData),
-    }
+    // {
+    //   need_email: true,
+    //   send_email_to_provider: true,
+    //   provider_data: JSON.stringify(providerData),
+    // }
   );
 };
