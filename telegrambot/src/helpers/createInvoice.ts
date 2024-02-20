@@ -36,7 +36,8 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
     {
       need_email: true,
       send_email_to_provider: true,
-      provider_data: JSON.stringify(providerData),
+      //@ts-ignore
+      provider_data: providerData,
     }
   );
 };
