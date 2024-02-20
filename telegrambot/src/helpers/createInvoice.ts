@@ -19,6 +19,8 @@ export const createInvoice = ({ ctx, payload, amount }: ICreateInvoice) => {
             currency: 'RUB',
           },
           vat_code: 1,
+          payment_mode: 'full_payment',
+          payment_subject: 'service',
         },
       ],
     },
