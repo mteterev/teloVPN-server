@@ -1,4 +1,4 @@
-import { Composer } from 'grammy';
+import { Composer, InputFile } from 'grammy';
 import { menuTariffs } from '../keyboards/tariffs.menu';
 import { messages } from '../messages/common';
 import { instructionsMenu } from '../keyboards/instructions.menu';
@@ -16,6 +16,8 @@ import { getKey } from '../functions/getKey';
 import { getInbound } from '../api/vpn/getInbound';
 import { deleteClient } from '../api/vpn/user';
 import { getServers } from '../api/server';
+import { jsonToCSV } from '../helpers/jsonToCSV';
+import { usersOutput } from '../constants/fileOutputNames';
 
 const composer = new Composer();
 
@@ -167,10 +169,25 @@ composer.callbackQuery('getServers', async (ctx) => {
 composer.callbackQuery('getUsers', async (ctx) => {
   try {
     const users = await getUsers();
+    jsonToCSV({
+      data: users,
+      headers: Object.keys(users?.[0]).map((key) => ({ id: key, title: key })),
+    });
     await ctx.reply('Список пользователей:');
-    await ctx.reply(JSON.stringify(users));
+    await ctx.replyWithDocument(new InputFile(`${usersOutput}.csv`));
   } catch (e) {
     await ctx.reply('Не получилось получить список пользователей :(');
+  } finally {
+    await ctx.answerCallbackQuery();
+  }
+});
+
+composer.callbackQuery('getUsersCount', async (ctx) => {
+  try {
+    const users = await getUsers();
+    await ctx.reply(`Количество пользователей: ${users?.length}`);
+  } catch (e) {
+    await ctx.reply('Не получилось получить количество пользователей :(');
   } finally {
     await ctx.answerCallbackQuery();
   }
