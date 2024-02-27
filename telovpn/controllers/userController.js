@@ -99,7 +99,7 @@ class UserController {
   async getUsersNotPay(req, res) {
     const request = new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM users WHERE date_trunc('day', start_date) = date_trunc('day', current_date-1)`,
+        `SELECT * FROM users WHERE date_trunc('day', start_date) = date_trunc('day', current_date-10)`,
         (error, results) => {
           if (error) {
             reject(error);
@@ -117,7 +117,7 @@ class UserController {
     }
   }
 
-  async getUsersEndSubscribtion(req, res) {
+  async getUsersEndSubscription(req, res) {
     const request = new Promise((resolve, reject) => {
       db.query(
         `SELECT * FROM users WHERE date_trunc('day', expiration_time) > date_trunc('day', current_date-6) AND date_trunc('day', expiration_time) <= date_trunc('day', current_date)`,

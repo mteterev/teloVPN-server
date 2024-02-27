@@ -10,6 +10,6 @@ router.post('/user/pay/success', userController.updateUserAfterFirstPay);
 router.delete('/user/:user_id', userController.deleteUser);
 router.get('/user/server/:user_id', userController.getUserServer);
 router.get('/users/notpay', userController.getUsersNotPay);
-router.get('/users/endsub', userController.getUsersEndSubscribtion);
+router.get('/users/endsub', userController.getUsersEndSubscription);
 
 module.exports = router;

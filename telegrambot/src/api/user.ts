@@ -80,6 +80,24 @@ export const getUser = async (id: number): Promise<any> => {
   }
 };
 
+export const getUserNotPayed = async (): Promise<any> => {
+  try {
+    const users = await axiosServerInstance.get(`/users/notpay`);
+    return users.data;
+  } catch (e: any) {
+    throw new Error(e);
+  }
+};
+
+export const getUserEndSubscription = async (): Promise<any> => {
+  try {
+    const users = await axiosServerInstance.get(`/users/endsub`);
+    return users.data;
+  } catch (e: any) {
+    throw new Error(e);
+  }
+};
+
 export const getUserServer = async (
   user_id: number
 ) => {

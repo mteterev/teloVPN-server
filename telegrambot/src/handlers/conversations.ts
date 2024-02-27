@@ -43,7 +43,25 @@ export async function removeUserFromServer(
   return;
 }
 
+export async function getReview(
+  conversation: MyConversation,
+  ctx: MyContext
+) {
+  await ctx.reply('Напишите, пожалуйста, сообщением ниже ваш отзыв или пожелания и мы постараемся решить это в индивидуальном порядке :)');
+  const { message } = await conversation.wait();
+
+  try {
+    await ctx.reply(`Ваш отзыв успешно записан! Благодарим за уделенное время!`);
+  } catch (e: any) {
+    await ctx.reply(`Ошибка записи отзыва. Попробуйте, пожалуйста, позднее или напишите в поддержку.`);
+    throw new Error(e);
+  }
+
+  return;
+}
+
 export const createConversations = (bot: Bot<any, Api<RawApi>>) => {
   bot.use(createConversation(createServer));
   bot.use(createConversation(removeUserFromServer));
+  bot.use(createConversation(getReview));
 };

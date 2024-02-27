@@ -193,4 +193,10 @@ composer.callbackQuery('getUsersCount', async (ctx) => {
   }
 });
 
+composer.callbackQuery('getReview', async (ctx) => {
+  //@ts-ignore
+  await ctx.conversation.enter('getReview');
+  await ctx.answerCallbackQuery();
+});
+
 export default composer;

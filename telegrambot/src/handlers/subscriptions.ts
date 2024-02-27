@@ -1,32 +1,37 @@
 import { CronJob } from 'cron';
-import { getUsers } from '../api/user';
-import { getTimeToEnd } from '../functions/getTimeToEnd';
+import { getUserEndSubscription, getUserNotPayed } from '../api/user';
 import { Bot } from 'grammy';
 import { messages } from '../messages/common';
+import { notPayedUserMain } from '../keyboards/notPayedUser.menu';
 
 const payDayHandler = (bot: Bot) => {
   const payDay = new CronJob('30 10 * * *', async () => {
-    const users = await getUsers();
-    if (users?.length) {
-      const usersExpiredSoon = users.filter((user: any) => {
-        if (user.expiration_time) {
-          const expiredDate = new Date(user.expiration_time);
-          const timeToEnd = getTimeToEnd(expiredDate);
-
-          if (timeToEnd < 6 && timeToEnd > 0) {
-            return user;
+    const usersExpiredSoon = await getUserEndSubscription();
+    if (usersExpiredSoon?.length) {
+      usersExpiredSoon.forEach((user: any) => {
+        bot.api.sendMessage(
+          user.user_id,
+          messages.subscriptionWillExpiredSoon,
+          {
+            reply_markup: notPayedUserMain,
           }
-        }
+        );
       });
+    }
+  });
 
-      if (usersExpiredSoon?.length) {
-        usersExpiredSoon.forEach((user: any) => {
-          bot.api.sendMessage(
-            user.user_id,
-            messages.subscriptionWillExpiredSoon
-          );
+  payDay.start();
+};
+
+const notPayHandler = (bot: Bot) => {
+  const payDay = new CronJob('30 12 * * *', async () => {
+    const usersNotPayed = await getUserNotPayed();
+    if (usersNotPayed?.length) {
+      usersNotPayed.forEach((user: any) => {
+        bot.api.sendMessage(user.user_id, messages.notPayedUsers, {
+          reply_markup: notPayedUserMain,
         });
-      }
+      });
     }
   });
 
@@ -35,4 +40,5 @@ const payDayHandler = (bot: Bot) => {
 
 export const subscriptionsAdapter = (bot: Bot) => {
   payDayHandler(bot);
+  notPayHandler(bot);
 };

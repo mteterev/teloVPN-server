@@ -13,20 +13,14 @@ export const getTimeToEnd = (expiration_time: Date) => {
   return 0;
 };
 
-// export const getTimeToEndNoAbs = (expiration_time: Date) => {
-//   const currentTime = new Date();
-//   const expTime = new Date(expiration_time);
+export function getMinutesBetweenDates(currentDate: Date) {
+  const diff = currentDate.getTime() - new Date().getTime();
 
-//   if (expTime > currentTime) {
-//     //@ts-ignore
-//     const diffTime = Math.abs(expTime - currentTime);
-//     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return Math.abs(Math.ceil((diff / 60000)));
+}
 
-//     return diffDays;
-//   }
-//   //@ts-ignore
-//   const diffTime = currentTime.getTime() - expTime.getTime();
-//   const diffDays = diffTime / (1000 * 60 * 60 * 24);
+export function getHoursBetweenDates(currentDate: Date) {
+  const diff = currentDate.getTime() - new Date().getTime();
 
-//   return diffDays;
-// };
+  return Math.abs(Math.ceil((diff / (60000 * 60))));
+}
