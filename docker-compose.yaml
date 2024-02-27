@@ -20,19 +20,19 @@ services:
     networks:
       - app-network
 
-  telegrambot:
-    build:
-      context: ./telegrambot
-      dockerfile: Dockerfile
-    container_name: telegrambot
-    restart: unless-stopped
-    volumes:
-      - ./telegrambot:/home/node/telegrambot
-      - ./telegrambot/node_modules:/home/node/telegrambot/node_modules
-    depends_on:
-      - nodejs
-    networks:
-      - app-network
+#  telegrambot:
+#     build:
+#      context: ./telegrambot
+#      dockerfile: Dockerfile
+#    container_name: telegrambot
+#    restart: unless-stopped
+#    volumes:
+#      - ./telegrambot:/home/node/telegrambot
+#      - ./telegrambot/node_modules:/home/node/telegrambot/node_modules
+#    depends_on:
+#      - nodejs
+#    networks:
+#      - app-network
 
   postgres:
     image: postgres
