@@ -10,22 +10,23 @@ class UserController {
         `INSERT INTO users (user_id, role, start_date) VALUES ($1, 'user', NOW()) RETURNING *`,
         [user_id]
       );
-      res.json(newUser.rows[0]);
+      res.status(200).json(newUser.rows[0]);
     } catch (e) {
       res.json(e);
     }
   }
   async getUser(req, res) {
-    try {
-      const user_id = req.params.user_id;
-      const user = await db.query(`SELECT * FROM users WHERE user_id = $1`, [
-        user_id,
-      ]);
-      res.json(user.rows[0]);
-    } catch (e) {
-      res.json(e);
-    }
-  }
+     try {
+       const user_id = req.params.user_id;
+       const user = await db.query(`SELECT * FROM users WHERE user_id = $1`, [
+         user_id,
+       ]);
+       res.json(user.rows[0]);
+     } catch (e) {
+       res.json(e);
+     }
+   }
+
   async getUsers(req, res) {
     try {
       const users = await db.query(`SELECT * FROM users`);
@@ -41,7 +42,6 @@ class UserController {
         `UPDATE users SET role = COALESCE($2, role), server = COALESCE($3, server), expiration_time = COALESCE($4, expiration_time), uuid = COALESCE($5, uuid) where user_id = $1 RETURNING *`,
         [user_id, role, server, expiration_time, uuid]
       );
-
       res.json(updateUser.rows[0]);
     } catch (e) {
       res.json(e);
@@ -95,21 +95,66 @@ class UserController {
       res.status(400).send(e);
     }
   }
-  async getUserServer(req, res) {
+
+  async getUsersNotPay(req, res) {
+    const request = new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM users WHERE date_trunc('day', start_date) = date_trunc('day', current_date-1)`,
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(results);
+        }
+      );
+    });
+
     try {
-      const user_id = req.params.user_id;
-      const userServer = await db.query(
+      const result = await request;
+      res.status(200).json(result.rows);
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  }
+
+  async getUsersEndSubscribtion(req, res) {
+    const request = new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM users WHERE date_trunc('day', expiration_time) > date_trunc('day', current_date-6) AND date_trunc('day', expiration_time) <= date_trunc('day', current_date)`,
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(results);
+        }
+      );
+    });
+    try {
+      const result = await request;
+      res.status(200).json(result.rows);
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  }
+
+  async getUserServer(req, res) {
+    const user_id = req.params.user_id;
+    const request = new Promise((resolve, reject) => {
+      db.query(
         `SELECT 
-                        u.server,
-                        s.url
-                    FROM users AS u
-                    JOIN servers AS s ON u.server = s.server
-                    WHERE u.user_id = $1`,
+          u.server,
+          s.url
+        FROM users AS u
+        JOIN servers AS s ON u.server = s.server
+        WHERE u.user_id = $1`,
         [user_id]
       );
-      res.json(userServer.rows[0]);
+    });
+    try {
+      const result = await request;
+      res.status(200).json(result.rows[0]);
     } catch (e) {
-      res.json(e);
+      res.status(400).send(e);
     }
   }
 }

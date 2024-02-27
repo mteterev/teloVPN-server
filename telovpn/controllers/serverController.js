@@ -1,6 +1,6 @@
 const db = require('../db');
 
-class UserController {
+class ServerController {
   async addServer(req, res) {
     const { server, url, max_users } = req.body;
 
@@ -71,4 +71,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+module.exports = new ServerController();
