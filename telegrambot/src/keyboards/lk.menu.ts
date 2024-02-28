@@ -8,5 +8,7 @@ export const clientMenu = new InlineKeyboard()
   .row()
   .text('Инструкция', 'instructionCb')
   .row()
+  .text('Пригласить друга', 'inviteFriend')
+  .row()
   .url('Поддержка', helpUrl)
   .row();

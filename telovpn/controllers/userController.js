@@ -5,10 +5,10 @@ const { nanoid } = require('nanoid');
 class UserController {
   async addUser(req, res) {
     try {
-      const { user_id } = req.body;
+      const { user_id, refer } = req.body;
       const newUser = await db.query(
-        `INSERT INTO users (user_id, role, start_date) VALUES ($1, 'user', NOW()) RETURNING *`,
-        [user_id]
+        `INSERT INTO users (user_id, role, start_date, refer) VALUES ($1, 'user', NOW(), $2) RETURNING *`,
+        [user_id, refer]
       );
       res.status(200).json(newUser.rows[0]);
     } catch (e) {
@@ -16,16 +16,16 @@ class UserController {
     }
   }
   async getUser(req, res) {
-     try {
-       const user_id = req.params.user_id;
-       const user = await db.query(`SELECT * FROM users WHERE user_id = $1`, [
-         user_id,
-       ]);
-       res.json(user.rows[0]);
-     } catch (e) {
-       res.json(e);
-     }
-   }
+    try {
+      const user_id = req.params.user_id;
+      const user = await db.query(`SELECT * FROM users WHERE user_id = $1`, [
+        user_id,
+      ]);
+      res.json(user.rows[0]);
+    } catch (e) {
+      res.json(e);
+    }
+  }
 
   async getUsers(req, res) {
     try {
@@ -147,7 +147,13 @@ class UserController {
         FROM users AS u
         JOIN servers AS s ON u.server = s.server
         WHERE u.user_id = $1`,
-        [user_id]
+        [user_id],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(results);
+        }
       );
     });
     try {

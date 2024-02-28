@@ -1,8 +1,12 @@
 import { axiosServerInstance } from '../plugins/axios';
 import { IUserRequest } from '../interfaces/requests/user';
-import { AxiosResponse } from 'axios';
 
 interface ICreateUser {
+  user_id: number;
+  refer?: string;
+}
+
+interface IRemoveUser {
   user_id: number;
 }
 
@@ -11,16 +15,19 @@ interface IUpdateUserAfterFirstPay {
   expiration_time: number;
 }
 
-export const createUser = async ({ user_id }: ICreateUser) => {
+export const createUser = async ({ user_id, refer }: ICreateUser) => {
   try {
-    const user = await axiosServerInstance.post('/user', { user_id });
+    const user = await axiosServerInstance.post('/user', {
+      user_id,
+      refer: Number(refer),
+    });
     return user.data;
   } catch (e: any) {
     throw new Error(e);
   }
 };
 
-export const removeUser = async ({ user_id }: ICreateUser) => {
+export const removeUser = async ({ user_id }: IRemoveUser) => {
   try {
     const user = await axiosServerInstance.delete(`/user/${user_id}`);
     return user.data;
@@ -98,9 +105,7 @@ export const getUserEndSubscription = async (): Promise<any> => {
   }
 };
 
-export const getUserServer = async (
-  user_id: number
-) => {
+export const getUserServer = async (user_id: number) => {
   try {
     const userServer = await axiosServerInstance.get(`/user/server/${user_id}`);
     return userServer.data;

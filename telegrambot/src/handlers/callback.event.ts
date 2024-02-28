@@ -18,6 +18,7 @@ import { deleteClient } from '../api/vpn/user';
 import { getServers } from '../api/server';
 import { jsonToCSV } from '../helpers/jsonToCSV';
 import { usersOutput } from '../constants/fileOutputNames';
+import 'dotenv/config';
 
 const composer = new Composer();
 
@@ -47,7 +48,6 @@ composer.callbackQuery('instructionCb', async (ctx) => {
 composer.callbackQuery('getVPNKeyAgainCb', async (ctx) => {
   const user = await getUser(ctx.from.id);
   const userServer = await getUserServer(ctx.from.id);
-
   const inbound: any = await getInbound(user);
   const key = await getKey({ ctx, inbound, userServer: userServer.url });
   await editMessage({
@@ -196,6 +196,16 @@ composer.callbackQuery('getUsersCount', async (ctx) => {
 composer.callbackQuery('getReview', async (ctx) => {
   //@ts-ignore
   await ctx.conversation.enter('getReview');
+  await ctx.answerCallbackQuery();
+});
+
+composer.callbackQuery('inviteFriend', async (ctx) => {
+  let message = messages.inviteFriends;
+  message = message.replace(
+    '{inviteLink}',
+    `${process.env.URL_TO_BOT}?start=${ctx.from.id}`
+  );
+  await ctx.reply(message, { parse_mode: 'HTML' });
   await ctx.answerCallbackQuery();
 });
 

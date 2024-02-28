@@ -22,9 +22,26 @@ import { adminIds } from '../constants/common';
 const composer = new Composer();
 
 composer.command('start', async (ctx) => {
+  let refId = '';
+  let isUser = false;
+
+  if (ctx.msg.text.length > 6) {
+    refId = ctx.msg.text.slice(7);
+
+    const user = await getUser(Number(refId));
+    console.log(user);
+    if (user) {
+      isUser = true;
+    }
+  }
+
   const user = await getUser(ctx.msg.chat.id);
   if (!user) {
-    await createUser({ user_id: ctx.msg.chat.id });
+    if (isUser) {
+      await createUser({ user_id: ctx.msg.chat.id, refer: refId });
+    } else {
+      await createUser({ user_id: ctx.msg.chat.id });
+    }
   }
 
   if (user.role === EUserRole.CLIENT) {
@@ -38,6 +55,10 @@ composer.command('start', async (ctx) => {
       reply_markup: clientMenu,
     });
   } else {
+    if (refId && isUser) {
+      await ctx.reply(`Вы зашли по ссылке пользователя с ID ${refId}`);
+    }
+
     await ctx.reply(messages.helloMessage, {
       reply_markup: menuNewUserMain,
     });
@@ -53,7 +74,6 @@ composer.command('admin', async (ctx) => {
 });
 
 composer.on('pre_checkout_query', (ctx) => {
-  console.log(ctx, ctx.update.pre_checkout_query.order_info)
   ctx.api.answerPreCheckoutQuery(ctx.preCheckoutQuery.id, true);
 });
 
@@ -82,6 +102,7 @@ composer.on(':successful_payment', async (ctx) => {
     } else {
       const expiration_time = getExpirationTime({
         tariff: ctx.update.message?.successful_payment.invoice_payload,
+        isRefer: !!currentUser.refer,
       });
       const user = await updateUserAfterFirstPay({
         user_id: ctx.update.message?.from.id,
@@ -89,6 +110,22 @@ composer.on(':successful_payment', async (ctx) => {
       });
 
       await addNewClient(user);
+
+      if (currentUser.refer) {
+        const referUser = await getUser(currentUser.refer);
+
+        const expiration_time = getExpirationTime({
+          startDate: referUser.expiration_time,
+          tariff: '1month',
+        });
+
+        const user = await updateUser({
+          user_id: referUser.user_id,
+          expiration_time,
+        });
+
+        await updateClient(user);
+      }
 
       const inbound: any = await getInbound(user);
 
