@@ -99,7 +99,7 @@ class UserController {
   async getUsersNotPay(req, res) {
     const request = new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM users WHERE date_trunc('day', start_date) = date_trunc('day', current_date-10)`,
+        `SELECT * FROM users WHERE date_trunc('day', start_date) = date_trunc('day', current_date-10) and role = 'user'`,
         (error, results) => {
           if (error) {
             reject(error);
