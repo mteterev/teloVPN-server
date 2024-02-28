@@ -3,6 +3,7 @@ import { IUserRequest } from '../interfaces/requests/user';
 
 interface ICreateUser {
   user_id: number;
+  username?: string;
   refer?: string;
 }
 
@@ -15,10 +16,16 @@ interface IUpdateUserAfterFirstPay {
   expiration_time: number;
 }
 
-export const createUser = async ({ user_id, refer }: ICreateUser) => {
+interface IUpdateUserPromocode {
+  user_id: number;
+  promocode: string;
+}
+
+export const createUser = async ({ user_id, username, refer }: ICreateUser) => {
   try {
     const user = await axiosServerInstance.post('/user', {
       user_id,
+      username,
       refer: Number(refer),
     });
     return user.data;
@@ -62,6 +69,21 @@ export const updateUser = async ({
     const user = await axiosServerInstance.put<IUserRequest>('/user/', {
       user_id,
       expiration_time: new Date(expiration_time),
+    });
+    return user.data;
+  } catch (e: any) {
+    throw new Error(e);
+  }
+};
+
+export const updateUserPromocode = async ({
+  user_id,
+  promocode,
+}: IUpdateUserPromocode) => {
+  try {
+    const user = await axiosServerInstance.put<IUserRequest>('/user/', {
+      user_id,
+      promocode,
     });
     return user.data;
   } catch (e: any) {

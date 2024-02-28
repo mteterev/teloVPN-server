@@ -5,10 +5,10 @@ const { nanoid } = require('nanoid');
 class UserController {
   async addUser(req, res) {
     try {
-      const { user_id, refer } = req.body;
+      const { user_id, username, refer } = req.body;
       const newUser = await db.query(
-        `INSERT INTO users (user_id, role, start_date, refer) VALUES ($1, 'user', NOW(), $2) RETURNING *`,
-        [user_id, refer]
+        `INSERT INTO users (user_id, role, start_date, refer, username, promocode) VALUES ($1, 'user', NOW(), $2, $3, 'base') RETURNING *`,
+        [user_id, refer, username]
       );
       res.status(200).json(newUser.rows[0]);
     } catch (e) {
@@ -37,10 +37,11 @@ class UserController {
   }
   async updateUser(req, res) {
     try {
-      const { user_id, role, server, expiration_time, uuid } = req.body;
+      const { user_id, role, server, expiration_time, uuid, promocode } =
+        req.body;
       const updateUser = await db.query(
-        `UPDATE users SET role = COALESCE($2, role), server = COALESCE($3, server), expiration_time = COALESCE($4, expiration_time), uuid = COALESCE($5, uuid) where user_id = $1 RETURNING *`,
-        [user_id, role, server, expiration_time, uuid]
+        `UPDATE users SET role = COALESCE($2, role), server = COALESCE($3, server), expiration_time = COALESCE($4, expiration_time), promocode = COALESCE($6, promocode), uuid = COALESCE($5, uuid) where user_id = $1 RETURNING *`,
+        [user_id, role, server, expiration_time, uuid, promocode]
       );
       res.json(updateUser.rows[0]);
     } catch (e) {

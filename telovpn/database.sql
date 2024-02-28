@@ -21,11 +21,11 @@ create TABLE users(
 
 create TABLE prices(
     promocode VARCHAR (50) PRIMARY KEY,
-    1month INTEGER NOT NULL,
-    2month INTEGER NOT NULL,
-    3month INTEGER NOT NULL,
-    6month INTEGER NOT NULL,
-    12month INTEGER NOT NULL,
+    month1 INTEGER NOT NULL CHECK (month1 >= 100),
+    month2 INTEGER NOT NULL CHECK (month1 >= 100),
+    month3 INTEGER NOT NULL CHECK (month1 >= 100),
+    month6 INTEGER NOT NULL CHECK (month1 >= 100),
+    month12 INTEGER NOT NULL CHECK (month1 >= 100),
     end_date TIMESTAMP
 );
 
@@ -54,5 +54,5 @@ SET TIME ZONE 'Europe/Moscow';
 
 
 --INSERT INTO servers (server, url, cnt_users, max_users) VALUES ('NL01', 'http://213.183.61.244:34172', 0, 40);
---INSERT INTO prices (promocode, 1month, 2month, 3month, 6month, 12month) VALUES ('base', 200, 400, 550, 900, 1800);
+--INSERT INTO prices (promocode, month1, month2, month3, month6, month12) VALUES ('base', 200, 400, 550, 900, 1800);
 --INSERT INTO admins (admin_id) VALUES (203024910), (104115547);

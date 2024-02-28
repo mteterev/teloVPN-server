@@ -18,6 +18,7 @@ import { getTimeToEnd } from '../functions/getTimeToEnd';
 import { getKey } from '../functions/getKey';
 import { adminBaseMain } from '../keyboards/adminBaseMain';
 import { adminIds } from '../constants/common';
+import { ETariffs } from '../enums/tariffs.enum';
 
 const composer = new Composer();
 
@@ -29,7 +30,7 @@ composer.command('start', async (ctx) => {
     refId = ctx.msg.text.slice(7);
 
     const user = await getUser(Number(refId));
-    console.log(user);
+
     if (user) {
       isUser = true;
     }
@@ -38,9 +39,16 @@ composer.command('start', async (ctx) => {
   const user = await getUser(ctx.msg.chat.id);
   if (!user) {
     if (isUser) {
-      await createUser({ user_id: ctx.msg.chat.id, refer: refId });
+      await createUser({
+        user_id: ctx.msg.chat.id,
+        refer: refId,
+        username: ctx.from?.username,
+      });
     } else {
-      await createUser({ user_id: ctx.msg.chat.id });
+      await createUser({
+        user_id: ctx.msg.chat.id,
+        username: ctx.from?.username,
+      });
     }
   }
 
@@ -116,7 +124,7 @@ composer.on(':successful_payment', async (ctx) => {
 
         const expiration_time = getExpirationTime({
           startDate: referUser.expiration_time,
-          tariff: '1month',
+          tariff: ETariffs.MONTH1,
         });
 
         const user = await updateUser({

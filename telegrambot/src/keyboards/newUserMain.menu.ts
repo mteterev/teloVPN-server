@@ -6,5 +6,7 @@ export const menuNewUserMain = new InlineKeyboard()
   .row()
   .text('Информация', 'informationCb')
   .row()
+  .text('Ввести промокод', 'addPromocode')
+  .row()
   .url('Поддержка', helpUrl)
   .row();

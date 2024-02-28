@@ -10,5 +10,7 @@ export const clientMenu = new InlineKeyboard()
   .row()
   .text('Пригласить друга', 'inviteFriend')
   .row()
+  .text('Ввести промокод', 'addPromocode')
+  .row()
   .url('Поддержка', helpUrl)
   .row();

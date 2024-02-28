@@ -1,18 +1,6 @@
-import { ETariffs } from '../enums/tariffs.enum';
+import { getPricesById } from '../api/price';
 
-export const getInvoiceAmount = (tariff: string) => {
-  switch (tariff) {
-    case ETariffs.MONTH1:
-      return 20000;
-    case ETariffs.MONTH2:
-      return 40000;
-    case ETariffs.MONTH3:
-      return 55000;
-    case ETariffs.MONTH6:
-      return 90000;
-    case ETariffs.MONTH12:
-      return 180000;
-    default:
-      return 0;
-  }
+export const getInvoiceAmount = async (tariff: string, id: number) => {
+  const prices = await getPricesById({ id });
+  return prices[tariff];
 };

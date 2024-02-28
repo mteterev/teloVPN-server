@@ -19,13 +19,18 @@ import { getServers } from '../api/server';
 import { jsonToCSV } from '../helpers/jsonToCSV';
 import { usersOutput } from '../constants/fileOutputNames';
 import 'dotenv/config';
+import { getPricesById } from '../api/price';
+import { getPricesDescription } from '../helpers/getPricesDescription';
 
 const composer = new Composer();
 
 composer.callbackQuery('getAccessCb', async (ctx) => {
+  const prices = await getPricesById({ id: ctx.from.id });
+  const description = getPricesDescription({ prices });
+
   await editMessage({
     ctx,
-    text: messages.tariffs.description,
+    text: messages.tariffs.description + description,
     keyboard: menuTariffs,
   });
 });
@@ -85,9 +90,10 @@ composer.callbackQuery('toHome', async (ctx) => {
 
 composer.callbackQuery(/month/g, async (ctx) => {
   const tariff = ctx.update.callback_query.data;
+  const amount = await getInvoiceAmount(tariff, ctx.from.id);
 
-  if (tariff && getInvoiceAmount(tariff)) {
-    createInvoice({ ctx, payload: tariff, amount: getInvoiceAmount(tariff) });
+  if (tariff && amount) {
+    createInvoice({ ctx, payload: tariff, amount: amount * 100 });
   }
 
   await ctx.answerCallbackQuery();
@@ -196,6 +202,12 @@ composer.callbackQuery('getUsersCount', async (ctx) => {
 composer.callbackQuery('getReview', async (ctx) => {
   //@ts-ignore
   await ctx.conversation.enter('getReview');
+  await ctx.answerCallbackQuery();
+});
+
+composer.callbackQuery('addPromocode', async (ctx) => {
+  //@ts-ignore
+  await ctx.conversation.enter('addPromocode');
   await ctx.answerCallbackQuery();
 });
 
