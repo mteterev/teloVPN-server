@@ -8,7 +8,7 @@ create TABLE servers(
 create TABLE users(
     user_id INTEGER PRIMARY KEY,
     start_date TIMESTAMP NOT NULL,
-    role VARCHAR(10) CHECK (role IN ('user', 'client', 'admin')),
+    role VARCHAR(10) CHECK (role IN ('user', 'client', 'test')),
     server VARCHAR (50),
     expiration_time TIMESTAMP,
     subId varchar (50) UNIQUE,
@@ -26,7 +26,8 @@ create TABLE prices(
     month3 INTEGER NOT NULL CHECK (month1 >= 100),
     month6 INTEGER NOT NULL CHECK (month1 >= 100),
     month12 INTEGER NOT NULL CHECK (month1 >= 100),
-    end_date TIMESTAMP
+    end_date TIMESTAMP,
+    validity INTEGER CHECK (validity > 0)
 );
 
 create TABLE admins(

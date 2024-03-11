@@ -12,4 +12,4 @@ USER node
 
 COPY --chown=node:node . .
 
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "start:dev" ]

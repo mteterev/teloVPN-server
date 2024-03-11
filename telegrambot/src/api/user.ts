@@ -1,5 +1,6 @@
 import { axiosServerInstance } from '../plugins/axios';
 import { IUserRequest } from '../interfaces/requests/user';
+import { EUserRole } from '../enums/user.enum';
 
 interface ICreateUser {
   user_id: number;
@@ -14,6 +15,7 @@ interface IRemoveUser {
 interface IUpdateUserAfterFirstPay {
   user_id: number;
   expiration_time: number;
+  role?: EUserRole
 }
 
 interface IUpdateUserPromocode {
@@ -61,9 +63,25 @@ export const updateUserAfterFirstPay = async ({
   }
 };
 
+export const updateUserTest = async ({
+  user_id,
+  expiration_time,
+}: IUpdateUserAfterFirstPay) => {
+  try {
+    const user = await axiosServerInstance.put<IUserRequest>('/user/test', {
+      user_id,
+      expiration_time: new Date(expiration_time),
+    });
+    return user.data;
+  } catch (e: any) {
+    throw new Error(e);
+  }
+};
+
 export const updateUser = async ({
   user_id,
   expiration_time,
+  role
 }: IUpdateUserAfterFirstPay) => {
   try {
     const user = await axiosServerInstance.put<IUserRequest>('/user/', {

@@ -19,6 +19,9 @@ import { getKey } from '../functions/getKey';
 import { adminBaseMain } from '../keyboards/adminBaseMain';
 import { adminIds } from '../constants/common';
 import { ETariffs } from '../enums/tariffs.enum';
+import { generateVPNKeyHandler } from '../helpers/generateVPNKey';
+import { addRefer } from '../helpers/addRefer';
+import { updateClientHandler } from '../helpers/updateClient';
 
 const composer = new Composer();
 
@@ -36,16 +39,16 @@ composer.command('start', async (ctx) => {
     }
   }
 
-  const user = await getUser(ctx.msg.chat.id);
+  let user = await getUser(ctx.msg.chat.id);
   if (!user) {
     if (isUser) {
-      await createUser({
+      user = await createUser({
         user_id: ctx.msg.chat.id,
         refer: refId,
         username: ctx.from?.username,
       });
     } else {
-      await createUser({
+      user = await createUser({
         user_id: ctx.msg.chat.id,
         username: ctx.from?.username,
       });
@@ -89,24 +92,9 @@ composer.on(':successful_payment', async (ctx) => {
   if (ctx.update.message) {
     const currentUser = await getUser(ctx.update.message?.from.id);
     if (currentUser.role === EUserRole.CLIENT) {
-      const expiration_time = getExpirationTime({
-        startDate: currentUser.expiration_time,
-        tariff: ctx.update.message?.successful_payment.invoice_payload,
-      });
-      const user = await updateUser({
-        user_id: ctx.update.message?.from.id,
-        expiration_time,
-      });
-
-      await updateClient(user);
-
-      await ctx.api.sendMessage(
-        ctx.update.message?.from.id,
-        messages.paymentSuccessOld,
-        {
-          reply_markup: clientMenu,
-        }
-      );
+      await updateClientHandler({ ctx, currentUser });
+    } else if (currentUser.role === EUserRole.TEST) {
+      await updateClientHandler({ ctx, currentUser, role: EUserRole.CLIENT });
     } else {
       const expiration_time = getExpirationTime({
         tariff: ctx.update.message?.successful_payment.invoice_payload,
@@ -118,35 +106,8 @@ composer.on(':successful_payment', async (ctx) => {
       });
 
       await addNewClient(user);
-
-      if (currentUser.refer) {
-        const referUser = await getUser(currentUser.refer);
-
-        const expiration_time = getExpirationTime({
-          startDate: referUser.expiration_time,
-          tariff: ETariffs.MONTH1,
-        });
-
-        const user = await updateUser({
-          user_id: referUser.user_id,
-          expiration_time,
-        });
-
-        await updateClient(user);
-      }
-
-      const inbound: any = await getInbound(user);
-
-      if (inbound) {
-        const userServer = await getUserServer(ctx.update.message?.from.id);
-        const key = await getKey({ ctx, inbound, userServer: userServer.url });
-        let message = messages.paymentSuccess;
-        message = message.replace('{vpnKey}', `<code>${key}</code>`);
-        await ctx.api.sendMessage(ctx.update.message?.from.id, message, {
-          reply_markup: paymentSuccessMenu,
-          parse_mode: 'HTML',
-        });
-      }
+      await addRefer({ currentUser });
+      await generateVPNKeyHandler({ ctx, user });
     }
   }
 });

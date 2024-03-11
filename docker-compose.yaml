@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "127.0.0.1:8080:8080"
+      - "8080:8080"
     volumes:
       - ./telovpn:/home/node/app
       - ./telovpn/node_modules:/home/node/app/node_modules
@@ -44,7 +44,6 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - telo-data:/var/lib/postgresql/data
-      - ./telovpn/database.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "127.0.0.1:5432:5432"
     networks:
@@ -73,7 +72,6 @@ services:
 volumes:
   telo-data:
   pgadmin-data:
-
 
 networks:
   app-network:

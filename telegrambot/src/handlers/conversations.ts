@@ -2,10 +2,25 @@ import { Api, Bot, RawApi } from 'grammy';
 import { MyContext, MyConversation } from '../interfaces/common';
 import { createConversation } from '@grammyjs/conversations';
 import { addServer } from '../api/server';
-import { removeUser, updateUser, updateUserPromocode } from '../api/user';
+import {
+  getUser,
+  getUserServer,
+  removeUser,
+  updateUser,
+  updateUserPromocode,
+  updateUserTest,
+} from '../api/user';
 import { getPrices } from '../api/price';
 import { toHomeMenu } from '../keyboards/toHome.menu';
 import { adminIds } from '../constants/common';
+import { EUserRole } from '../enums/user.enum';
+import { getExpirationTime } from '../functions/getExpirationTime';
+import { addNewClient } from '../api/vpn/user';
+import { getInbound } from '../api/vpn/getInbound';
+import { getKey } from '../functions/getKey';
+import { messages } from '../messages/common';
+import { paymentSuccessMenu } from '../keyboards/paymentSuccess.menu';
+import { generateVPNKeyHandler } from '../helpers/generateVPNKey';
 
 export async function createServer(
   conversation: MyConversation,
@@ -78,13 +93,37 @@ export async function addPromocode(
   const { message } = await conversation.wait();
 
   try {
-    const promocode = await getPrices({ promocode: message.text });
+    const promocode = await getPrices({
+      promocode: message.text?.toLowerCase()?.replace(/\s/g, ''),
+    });
 
     if (promocode) {
+      if (promocode.validity) {
+        const currentUser = await getUser(ctx.from.id);
+        
+        if (currentUser.role === EUserRole.USER) {
+          const currDate = new Date();
+          currDate.setDate(currDate.getDate() + promocode.validity);
+          const expiration_time = currDate.getTime();
+          
+          console.log(expiration_time)
+          const user = await updateUserTest({
+            user_id: ctx.from.id,
+            expiration_time,
+          });
+
+          console.log(user)
+
+          await addNewClient(user);
+          await generateVPNKeyHandler({ ctx, user });
+        }
+      }
+
       await updateUserPromocode({
         user_id: ctx.from.id,
         promocode: promocode.promocode,
       });
+
       await ctx.reply(`Ваш промокод успешно применен!`, {
         reply_markup: toHomeMenu,
       });
